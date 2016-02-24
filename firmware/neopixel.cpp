@@ -63,10 +63,11 @@
 #define pinSet(_pin, _hilo) (_hilo ? pinHI(_pin) : pinLO(_pin))
 
 Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) :
-  numLEDs(1), numBytes(4), type(t), pin(p), brightness(0), pixels(NULL), endTime(0)
+  numLEDs(1), numBytes(n*4), type(t), pin(p), brightness(0), pixels(NULL), endTime(0)
 {
     if((pixels = (uint8_t *)malloc(numBytes))) {
         memset(pixels, 0, numBytes);
+    }
 }
 
 Adafruit_NeoPixel::~Adafruit_NeoPixel() {
