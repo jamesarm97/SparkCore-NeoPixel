@@ -63,11 +63,10 @@
 #define pinSet(_pin, _hilo) (_hilo ? pinHI(_pin) : pinLO(_pin))
 
 Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) :
-  numLEDs(n), numBytes(n*3), type(t), pin(p), brightness(0), pixels(NULL), endTime(0)
+  numLEDs(1), numBytes(4), type(t), pin(p), brightness(0), pixels(NULL), endTime(0)
 {
-  if((pixels = (uint8_t *)malloc(numBytes))) {
-    memset(pixels, 0, numBytes);
-  }
+    if((pixels = (uint8_t *)malloc(numBytes))) {
+        memset(pixels, 0, numBytes);
 }
 
 Adafruit_NeoPixel::~Adafruit_NeoPixel() {
@@ -120,16 +119,17 @@ void Adafruit_NeoPixel::show(void) {
    *ptr = pixels,   // Pointer to next byte
     g,              // Current green byte value
     r,              // Current red byte value
-    b;              // Current blue byte value
+    b,w;              // Current blue byte value
 
   if(type == WS2812B) { // same as WS2812, 800 KHz bitstream
     while(i) { // While bytes left... (3 bytes = 1 pixel)
       mask = 0x800000; // reset the mask
-      i = i-3;      // decrement bytes remaining
+      i = i-4;      // decrement bytes remaining
       g = *ptr++;   // Next green byte value
       r = *ptr++;   // Next red byte value
       b = *ptr++;   // Next blue byte value
-      c = ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+      w = *ptr++;
+      c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         pinSet(pin, HIGH); // HIGH
@@ -218,7 +218,7 @@ void Adafruit_NeoPixel::show(void) {
             ::: "r0", "cc", "memory");
         }
         mask >>= 1;
-      } while ( ++j < 24 ); // ... pixel done
+      } while ( ++j < 32 ); // ... pixel done
     } // end while(i) ... no more pixels
   }
   else if(type == WS2812B2) { // WS2812B with DWT timer
@@ -232,11 +232,12 @@ void Adafruit_NeoPixel::show(void) {
 
     while(i) { // While bytes left... (3 bytes = 1 pixel)
       mask = 0x800000; // reset the mask
-      i = i-3;      // decrement bytes remaining
+      i = i-4;      // decrement bytes remaining
       g = *ptr++;   // Next green byte value
       r = *ptr++;   // Next red byte value
       b = *ptr++;   // Next blue byte value
-      c = ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+      w = *ptr++;
+      c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         cyc = DWT->CYCCNT;
@@ -254,18 +255,19 @@ void Adafruit_NeoPixel::show(void) {
           while(DWT->CYCCNT - cyc < CYCLES_800_T0L);
         }
         mask >>= 1;
-      } while ( ++j < 24 ); // ... pixel done
+      } while ( ++j < 32 ); // ... pixel done
     } // end while(i) ... no more pixels
 #endif
   }
   else if(type == WS2811) { // WS2811, 400 KHz bitstream
     while(i) { // While bytes left... (3 bytes = 1 pixel)
       mask = 0x800000; // reset the mask
-      i = i-3;      // decrement bytes remaining
+      i = i-4;      // decrement bytes remaining
       r = *ptr++;   // Next red byte value
       g = *ptr++;   // Next green byte value
       b = *ptr++;   // Next blue byte value
-      c = ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b; // Pack the next 3 bytes to keep timing tight
+        w = *ptr++;
+        c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         pinSet(pin, HIGH); // HIGH
@@ -413,17 +415,18 @@ void Adafruit_NeoPixel::show(void) {
             ::: "r0", "cc", "memory");
         }
         mask >>= 1;
-      } while ( ++j < 24 ); // ... pixel done
+      } while ( ++j < 32 ); // ... pixel done
     } // end while(i) ... no more pixels
   }
   else if(type == TM1803) { // TM1803 (Radio Shack Tri-Color Strip), 400 KHz bitstream
     while(i) { // While bytes left... (3 bytes = 1 pixel)
       mask = 0x800000; // reset the mask
-      i = i-3;      // decrement bytes remaining
+      i = i-4;      // decrement bytes remaining
       r = *ptr++;   // Next red byte value
       g = *ptr++;   // Next blue byte value
       b = *ptr++;   // Next green byte value
-      c = ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b; // Pack the next 3 bytes to keep timing tight
+        w = *ptr++;
+        c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         pinSet(pin, HIGH); // HIGH
@@ -550,17 +553,18 @@ void Adafruit_NeoPixel::show(void) {
             ::: "r0", "cc", "memory");
         }
         mask >>= 1;
-      } while ( ++j < 24 ); // ... pixel done
+      } while ( ++j < 32 ); // ... pixel done
     } // end while(i) ... no more pixels
   }
   else { // must be only other option TM1829, 800 KHz bitstream
     while(i) { // While bytes left... (3 bytes = 1 pixel)
       mask = 0x800000; // reset the mask
-      i = i-3;      // decrement bytes remaining
+      i = i-4;      // decrement bytes remaining
       r = *ptr++;   // Next red byte value
       b = *ptr++;   // Next blue byte value
       g = *ptr++;   // Next green byte value
-      c = ((uint32_t)r << 16) | ((uint32_t)b <<  8) | g; // Pack the next 3 bytes to keep timing tight
+        w = *ptr++;
+        c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       pinSet(pin, LOW); // LOW
       for( ;; ) {   // ... pixel done
@@ -601,7 +605,7 @@ void Adafruit_NeoPixel::show(void) {
             "nop" "\n\t"
 #endif
             ::: "r0", "cc", "memory");
-          if(j==24) break;
+          if(j==32) break;
           pinSet(pin, LOW); // LOW
         }
         else { // else masked bit is low
@@ -641,7 +645,7 @@ void Adafruit_NeoPixel::show(void) {
             "nop" "\n\t" "nop" "\n\t" "nop" "\n\t" "nop" "\n\t" "nop" "\n\t"
 #endif
             ::: "r0", "cc", "memory");
-          if(j==24) break;
+          if(j==32) break;
           pinSet(pin, LOW); // LOW
         }
       }
@@ -660,35 +664,80 @@ void Adafruit_NeoPixel::setPin(uint8_t p) {
   digitalWrite(p, LOW);
 }
 
+    // Set pixel color from separate R,G,B components:
+    void Adafruit_NeoPixel::setPixelColor(
+                                          uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+        
+        if(n < numLEDs) {
+            if(brightness) { // See notes in setBrightness()
+                r = (r * brightness) >> 8;
+                g = (g * brightness) >> 8;
+                b = (b * brightness) >> 8;
+                w = (w * brightness) >> 8;
+            }
+            uint8_t *p = &pixels[n * 4];
+            switch(type) {
+                case WS2812B: // WS2812 & WS2812B is GRB order.
+                case WS2812B2:
+                    *p++ = g;
+                    *p++ = r;
+                    *p++ = b;
+                    *p = w;
+                    break;
+                case TM1829: // TM1829 is special RBG order
+                    if(r == 255) r = 254; // 255 on RED channel causes display to be in a special mode.
+                    *p++ = r;
+                    *p++ = b;
+                    *p++ = g;
+                    *p = w;
+                    break;
+                case WS2811: // WS2811 is RGB order
+                case TM1803: // TM1803 is RGB order
+                default:     // default is RGB order
+                    *p++ = r;
+                    *p++ = g;
+                    *p++ = b;
+                    *p = w;
+                    break;
+            }
+        }
+    }
+    
 // Set pixel color from separate R,G,B components:
 void Adafruit_NeoPixel::setPixelColor(
  uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
+    uint8_t w = 0;
+    
   if(n < numLEDs) {
     if(brightness) { // See notes in setBrightness()
       r = (r * brightness) >> 8;
       g = (g * brightness) >> 8;
       b = (b * brightness) >> 8;
+      w = (w * brightness) >> 8;
     }
-    uint8_t *p = &pixels[n * 3];
+    uint8_t *p = &pixels[n * 4];
     switch(type) {
       case WS2812B: // WS2812 & WS2812B is GRB order.
       case WS2812B2:
         *p++ = g;
         *p++ = r;
-        *p = b;
+        *p++ = b;
+        *p = w;
         break;
       case TM1829: // TM1829 is special RBG order
         if(r == 255) r = 254; // 255 on RED channel causes display to be in a special mode.
         *p++ = r;
         *p++ = b;
-        *p = g;
+        *p++ = g;
+        *p = w;
         break;
       case WS2811: // WS2811 is RGB order
       case TM1803: // TM1803 is RGB order
       default:     // default is RGB order
         *p++ = r;
         *p++ = g;
-        *p = b;
+        *p++ = b;
+        *p = w;
         break;
     }
   }
@@ -698,6 +747,7 @@ void Adafruit_NeoPixel::setPixelColor(
 void Adafruit_NeoPixel::setPixelColor(uint16_t n, uint32_t c) {
   if(n < numLEDs) {
     uint8_t
+      w = (uint8_t)(c >> 32),
       r = (uint8_t)(c >> 16),
       g = (uint8_t)(c >>  8),
       b = (uint8_t)c;
@@ -705,27 +755,31 @@ void Adafruit_NeoPixel::setPixelColor(uint16_t n, uint32_t c) {
       r = (r * brightness) >> 8;
       g = (g * brightness) >> 8;
       b = (b * brightness) >> 8;
+      w = (w * brightness) >> 8;
     }
-    uint8_t *p = &pixels[n * 3];
+    uint8_t *p = &pixels[n * 4];
     switch(type) {
       case WS2812B: // WS2812 & WS2812B is GRB order.
       case WS2812B2:
         *p++ = g;
         *p++ = r;
-        *p = b;
+        *p++ = b;
+        *p = w;
         break;
       case TM1829: // TM1829 is special RBG order
         if(r == 255) r = 254; // 255 on RED channel causes display to be in a special mode.
         *p++ = r;
         *p++ = b;
-        *p = g;
+        *p++ = g;
+        *p = w;
         break;
       case WS2811: // WS2811 is RGB order
       case TM1803: // TM1803 is RGB order
       default:     // default is RGB order
         *p++ = r;
         *p++ = g;
-        *p = b;
+        *p++ = b;
+        *p = w;
         break;
     }
   }
@@ -740,6 +794,15 @@ void Adafruit_NeoPixel::setColorScaled(uint16_t aLedNumber, byte aRed, byte aGre
   setColor(aLedNumber, (aRed*aScaling)>>8, (aGreen*aScaling)>>8, (aBlue*aScaling)>>8);
 }
 
+    void Adafruit_NeoPixel::setColor(uint16_t aLedNumber, byte aRed, byte aGreen, byte aBlue, byte aWhite) {
+        return setPixelColor(aLedNumber, (uint8_t) aRed, (uint8_t) aGreen, (uint8_t) aBlue, (uint8_t aWhite));
+    }
+    
+    void Adafruit_NeoPixel::setColorScaled(uint16_t aLedNumber, byte aRed, byte aGreen, byte aBlue, byte aWhite, byte aScaling) {
+        // scale RGB with a common brightness parameter
+        setColor(aLedNumber, (aRed*aScaling)>>8, (aGreen*aScaling)>>8, (aBlue*aScaling)>>8, (aWhite*aScaling)>>8);
+    }
+    
 byte Adafruit_NeoPixel::brightnessToPWM(byte aBrightness) {
   static const byte pwmLevels[16] = { 0, 1, 2, 3, 4, 6, 8, 12, 23, 36, 48, 70, 95, 135, 190, 255 };
   return pwmLevels[aBrightness>>4];
@@ -748,6 +811,10 @@ byte Adafruit_NeoPixel::brightnessToPWM(byte aBrightness) {
 void Adafruit_NeoPixel::setColorDimmed(uint16_t aLedNumber, byte aRed, byte aGreen, byte aBlue, byte aBrightness) {
   setColorScaled(aLedNumber, aRed, aGreen, aBlue, brightnessToPWM(aBrightness));
 }
+    
+    void Adafruit_NeoPixel::setColorDimmed(uint16_t aLedNumber, byte aRed, byte aGreen, byte aBlue, byte aWhite, byte aBrightness) {
+        setColorScaled(aLedNumber, aRed, aGreen, aBlue, aWhite, brightnessToPWM(aBrightness));
+    }
 
 // Convert separate R,G,B into packed 32-bit RGB color.
 // Packed format is always RGB, regardless of LED strand color order.
@@ -755,13 +822,19 @@ uint32_t Adafruit_NeoPixel::Color(uint8_t r, uint8_t g, uint8_t b) {
   return ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
 }
 
+    // Convert separate R,G,B into packed 32-bit RGB color.
+    // Packed format is always RGB, regardless of LED strand color order.
+    uint32_t Adafruit_NeoPixel::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+        return ((uint32_t)w << 32) | ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
+    }
+    
 // Query color from previously-set pixel (returns packed 32-bit RGB value)
 uint32_t Adafruit_NeoPixel::getPixelColor(uint16_t n) const {
   if(n >= numLEDs) {
     // Out of bounds, return no color.
     return 0;
   }
-  uint8_t *p = &pixels[n * 3];
+  uint8_t *p = &pixels[n * 4];
   uint32_t c;
 
   switch(type) {
