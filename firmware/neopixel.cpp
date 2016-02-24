@@ -130,7 +130,7 @@ void Adafruit_NeoPixel::show(void) {
       r = *ptr++;   // Next red byte value
       b = *ptr++;   // Next blue byte value
       w = *ptr++;
-      c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+      c = ((uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         pinSet(pin, HIGH); // HIGH
@@ -238,7 +238,7 @@ void Adafruit_NeoPixel::show(void) {
       r = *ptr++;   // Next red byte value
       b = *ptr++;   // Next blue byte value
       w = *ptr++;
-      c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+      c = ((uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         cyc = DWT->CYCCNT;
@@ -268,7 +268,7 @@ void Adafruit_NeoPixel::show(void) {
       g = *ptr++;   // Next green byte value
       b = *ptr++;   // Next blue byte value
         w = *ptr++;
-        c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+        c = ((uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         pinSet(pin, HIGH); // HIGH
@@ -427,7 +427,7 @@ void Adafruit_NeoPixel::show(void) {
       g = *ptr++;   // Next blue byte value
       b = *ptr++;   // Next green byte value
         w = *ptr++;
-        c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+        c = ((uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       do {
         pinSet(pin, HIGH); // HIGH
@@ -565,7 +565,7 @@ void Adafruit_NeoPixel::show(void) {
       b = *ptr++;   // Next blue byte value
       g = *ptr++;   // Next green byte value
         w = *ptr++;
-        c = (uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
+        c = ((uint32_t)w << 24) | ((uint32_t)g << 16) | ((uint32_t)r <<  8) | b; // Pack the next 3 bytes to keep timing tight
       j = 0;        // reset the 24-bit counter
       pinSet(pin, LOW); // LOW
       for( ;; ) {   // ... pixel done
